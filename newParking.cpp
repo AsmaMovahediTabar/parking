@@ -172,9 +172,127 @@ class Parking{
         return false;
     }
 
-    void ordering(int i){
+     void ordering(int i) {
 
+        if (columns[i].isEmpty()) {
+            cout << "Column " << i << " is empty!" << endl;
+            return;
+        }
+        
+        // Step 1: Extract all cars from stack to array
+        vector<int> cars;
+        while (!columns[i].isEmpty()) {
+            cars.push_back(columns[i].pop());
+        }
+        
+        // Step 2: Apply merge sort recursively
+        mergeSort(cars, 0, cars.size() - 1);
+        
+        // Step 3: Push sorted cars back to stack
+        // Push in reverse to get ascending order from top
+        for (int j = cars.size() - 1; j >= 0; j--) {
+            columns[i].push(cars[j]);
+        }
+        
+        cout << "✓ Merge sort completed for column " << i << endl;
     }
+
+    // Recursive merge sort for vector
+    void mergeSort(vector<int>& arr, int left, int right) {
+        /*
+        ████ RECURSIVE CONTROL FLOW ████
+        
+        Base case: Single element
+        if (left >= right) return;
+        
+        Divide: Find middle point
+        int mid = left + (right - left) / 2;
+        
+        Conquer: Sort both halves recursively
+        mergeSort(arr, left, mid);      // Left half
+        mergeSort(arr, mid + 1, right); // Right half
+        
+        Combine: Merge sorted halves
+        merge(arr, left, mid, right);
+        */
+        
+        if (left >= right) return;
+        
+        int mid = left + (right - left) / 2;
+        
+        // Recursively sort left and right halves
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+        
+        // Merge the sorted halves
+        merge(arr, left, mid, right);
+    }
+    
+    // Merge two sorted subarrays
+    void merge(vector<int>& arr, int left, int mid, int right) {
+        /*
+        ████ MERGE PROCESS VISUALIZATION ████
+        
+        Example: arr = [27, 38, 43, 3, 9]
+                 left=0, mid=2, right=4
+        
+        Step 1: Create temporary arrays
+            leftArr = [27, 38, 43] (size = 3)
+            rightArr = [3, 9] (size = 2)
+        
+        Step 2: Merge with two-pointer technique
+            i=0, j=0, k=left=0
+            Compare leftArr[0]=27 vs rightArr[0]=3 → 27>3 → arr[0]=3
+            i=0, j=1, k=1
+            Compare 27 vs 9 → 27>9 → arr[1]=9
+            i=0, j=2 (end), copy remaining leftArr
+            arr[2]=27, arr[3]=38, arr[4]=43
+        
+        Result: arr = [3, 9, 27, 38, 43]
+        */
+        
+        int n1 = mid - left + 1;  // Size of left subarray
+        int n2 = right - mid;     // Size of right subarray
+        
+        // Create temporary arrays
+        vector<int> leftArr(n1);
+        vector<int> rightArr(n2);
+        
+        // Copy data to temp arrays
+        for (int p = 0; p < n1; p++)
+            leftArr[p] = arr[left + p];
+        for (int q = 0; q < n2; q++)
+            rightArr[q] = arr[mid + 1 + q];
+        
+        // Merge the temp arrays back
+        int i = 0, j = 0, k = left;
+        
+        while (i < n1 && j < n2) {
+            if (leftArr[i] <= rightArr[j]) {
+                arr[k] = leftArr[i];
+                i++;
+            } else {
+                arr[k] = rightArr[j];
+                j++;
+            }
+            k++;
+        }
+        
+        // Copy remaining elements of leftArr
+        while (i < n1) {
+            arr[k] = leftArr[i];
+            i++;
+            k++;
+        }
+        
+        // Copy remaining elements of rightArr
+        while (j < n2) {
+            arr[k] = rightArr[j];
+            j++;
+            k++;
+        }
+    }
+    
 
     void displacement(int i, int j){
         int d = j;
@@ -217,16 +335,8 @@ class Car{
     }
 };
 
-void inputCar(Parking& parking, int carID, int column);
-int findCar(Parking& parking, int carID);
-bool outputCar(Parking& parking, int carID);
-void orderColumn(Parking& parking, int column);
-void displaceCars(Parking& parking, int fromCol, int toCol);
-
 int main(){
     int n, m;
     cin>>n>>m;
     Parking(n,m);
-
-    
 }
