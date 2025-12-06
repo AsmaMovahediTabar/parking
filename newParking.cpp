@@ -194,6 +194,7 @@ class Parking{
     vector<Stack> columns;
     int numbersOfColumn;
     int columnCapacity;
+    Queue inputQueue;
 
     public:
     Parking(int n, int m) : numbersOfColumn(n), columnCapacity(m){
@@ -202,15 +203,60 @@ class Parking{
              << " columns, each of capacity " << columnCapacity << endl;
     }
 
+// تابع ورود خودرو به پارکینگ 
+// ماشین از صف ورودی وارد اولین استک خالی می شود 
+int input(int carID) {
+    // ماشین وارد صف ورودی میشه (enqueue)
+    inputQueue.enqueue(carID);
+    // اولین ماشین صف را برداشته و میگذاریم در پارکینگ (dequeue)
+    int car = inputQueue.dequeue();
+
+    // می‌گردیم دنبال اولین استک خالی  
+    for (int i = 0; i < numbersOfColumn; i++) {
+        if (!columns[i].isFull()) {
+            columns[i].push(car);
+            cout << "Car " << car << " parked in column " << i << endl;
+            return i;  // شماره ستون که ماشین پارک شده را بر می گرداند 
+        }
+    }
+
+    // اگر همه استک ها پر باشند
+    cout << "Parking is full." << endl;
     
-    int input(int carID){
+    // ماشین رو برمی‌گردونیم به صف چون پارکینگ پر بوده 
+    inputQueue.enqueue(car);
 
+    return -1;  // یعنی پارکینگ پر بود و ماشین پارک نشد
+}
+
+    // ورود به Stack مشخص (شماره i توسط کاربر تعیین می‌شه)
+    void input(int carID, int i) {
+         // ماشین وارد صف ورودی میشه (enqueue)
+        inputQueue.enqueue(carID);
+        // اولین ماشین صف را برداشته و میگذاریم در پارکینگ (dequeue)
+        int car = inputQueue.dequeue();
+
+        // چک می‌کنیم آیا شماره استک معتبره (i باید بین 0 تا n-1 باشه)
+        if (i < 0 || i >= numbersOfColumn) {
+            cout << "Invalid column number." << endl;
+            // ماشین رو برمی‌گردونیم به صف چون استک نامعتبر بود
+            inputQueue.enqueue(car);
+            return;
+        }
+
+        // چک می‌کنیم آیا استک پره یا نه
+        if (columns[i].isFull()) {
+            cout << "Column " << i << " is full." << endl;
+            // برمی‌گردونیم به صف ورودی
+            inputQueue.enqueue(car);
+            return;
+        }
+
+        // ماشین رو می‌ذاریم تو استک شماره i
+        columns[i].push(car);
+        cout << "Car " << car << " parked in column " << i << endl;
     }
-
-    void input(int carID,int i){
-
-    }
-
+    
     int find(int carID){
 
     }
