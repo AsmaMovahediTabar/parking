@@ -132,7 +132,62 @@ class Stack{
     }
 };
 
-class Queue{};
+class Queue {
+private:
+    LinkedList list;
+public:
+// ورورد ماشین به صف ورودی پارکینگ که به آخر صف اضافه می شود
+    void enqueue(int carID) {
+        list.addEnd(carID);
+    }
+// پیچیدگی زمانی: چون از کلاس 
+//linkedlist ارث بری کرده
+// میشه O(n) 
+
+    // خارج کردن اولین ماشین از صف (dequeue)
+    //وقتی ماشین از صف ورودی، وارد پارکینگ می شود
+
+    int dequeue() {
+        if (list.head == nullptr) {
+            cout << "Queue is empty!" << endl;
+            return -1;
+        }
+
+        int carID = list.getFirst();   // شماره پلاک اولین ماشین را می خواند 
+        list.removeFirst();            // اولین Node را حذف می‌کنه
+        return carID;                  // شماره ماشین رو برمی‌گردونه تا داخل استک گذاشته بشه 
+    }
+
+    // فقط نگاه کردن به اولین ماشین بدون حذف
+    int peek() {
+        if (list.head == nullptr) {
+            cout << "Queue is empty!" << endl;
+            return -1;
+        }
+        return list.getFirst();
+    }
+
+    // چک کردن خالی بودن صف
+    bool isEmpty() {
+        return list.head == nullptr;
+    }
+
+    // نمایش تمام ماشین‌های تو صف ورودی (از اول تا آخر) 
+    void display() {
+        if (list.head == nullptr) {
+            cout << "Queue is empty!" << endl;
+            return;
+        }
+        
+        cout << "Queue: ";
+        Node* temp = list.head;
+        while (temp != nullptr) {
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+};
 
 class Parking{
     private:
