@@ -257,8 +257,47 @@ int input(int carID) {
         cout << "Car " << car << " parked in column " << i << endl;
     }
     
-    int find(int carID){
+    // تابع find - جستجوی ماشین در تمام استک‌ها
+    int find(int carID) {
+        for (int col = 0; col < numbersOfColumn; col++) {
+            vector<int> temp;          // برای نگه داشتن ماشین‌های خارج شده
+            int position = 1;          // موقعیت از 1 شروع می‌شه (top = 1)
 
+            // همه ماشین‌های این ستون رو موقتاً خارج می‌کنیم
+            while (!columns[col].isEmpty()) {
+                int currentCar = columns[col].pop();
+                temp.push_back(currentCar);
+
+                if (currentCar == carID) {
+                    // پیدا شد!
+                    cout << "Car " << carID << " found in column " << col 
+                         << " at position " << position << " from top." << endl;
+
+                    // حالا بقیه ماشین‌های خارج شده رو برمی‌گردونیم (ترتیب حفظ می‌شه)
+                    // اول ماشین‌های زیرش رو برمی‌گردونیم، بعد خودش رو (چون خودش الان top جدیده)
+                    for (int k = temp.size() - 1; k >= 0; k--) {
+                        if (temp[k] != carID) {  // خودش رو دوباره push نمی‌کنیم (چون پیدا شده و نمی‌خوایم حذفش کنیم)
+                            columns[col].push(temp[k]);
+                        }
+                    }
+                    // خود ماشین پیدا شده رو هم برمی‌گردونیم بالای همه
+                    columns[col].push(carID);
+
+                    return col;  // شماره ستون رو برمی‌گردونیم
+                }
+
+                position++;
+            }
+
+            // اگر تا اینجا پیدا نشد → همه ماشین‌های خارج شده رو دقیقاً با همان ترتیب قبلی برمی‌گردونیم
+            for (int k = temp.size() - 1; k >= 0; k--) {
+                columns[col].push(temp[k]);
+            }
+        }
+
+        // اگر هیچ جا پیدا نشد
+        cout << "Car " << carID << " not found." << endl;
+        return -1;
     }
 
     bool output(int carID){
