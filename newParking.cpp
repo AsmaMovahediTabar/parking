@@ -122,7 +122,7 @@ class Stack{
     }
 
     int peek(){
-        if (isEmpty){ 
+        if (isEmpty()){ 
             cout << "stack is empty." <<endl;
             return 0;}
         else{
