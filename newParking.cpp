@@ -100,6 +100,8 @@ class Stack{
         if(size == capacity) return true;
         else return false;
     }
+
+    // Push: Add car to stack (park car)
     bool push(int carID){
         if (isFull()){
             cout << "stack is full."<< endl;
@@ -111,6 +113,7 @@ class Stack{
         }
         
     }
+    // Pop: Remove car from top of stack
     int pop(){
         if (isEmpty()) cout << "stack is empty." <<endl;
         else{
@@ -120,7 +123,7 @@ class Stack{
             return carID;
         }
     }
-
+    // Peek: See top car without removing
     int peek(){
         if (isEmpty){ 
             cout << "stack is empty." <<endl;
@@ -320,7 +323,38 @@ class Parking{
         }
         if (columns[i].peek()==0) cout << "displacement done." <<endl;
     }
+
+    void display(int i){
+    if(i < 0 || i >= numbersOfColumn) {
+        cout << "Invalid column index!" << endl;
+        return;
+    }
     
+    if(columns[i].isEmpty()) {
+        cout << "Column " << i << " is empty." << endl;
+        return;
+    }
+    
+    cout << "Column " << i << " (from top to bottom): ";
+    
+    // Create a temporary stack to reverse the order for display
+    Stack temp(columnCapacity);
+    Stack& currentColumn = columns[i];
+    
+    // Transfer all cars to temporary stack (reverses order)
+    while(!currentColumn.isEmpty()) {
+        int carID = currentColumn.pop();
+        cout << carID << " ";
+        temp.push(carID);
+    }
+    
+    // Restore cars back to original column
+    while(!temp.isEmpty()) {
+        currentColumn.push(temp.pop());
+    }
+    
+    cout << endl;
+}
 };
 
 class Car{
@@ -336,7 +370,9 @@ class Car{
 };
 
 int main(){
-    int n, m;
+    int n, m, i;
     cin>>n>>m;
-    Parking(n,m);
+    Parking myParking(n,m);
+    cin>>i;
+    myParking.display(i);
 }
