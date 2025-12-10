@@ -402,6 +402,7 @@ class Parking{
     }
 
     void displacement(int i, int j){
+        if(i==j) return;
         int d = j;
         int r=0,s=0;
         while(columns[i].isEmpty()!= true){
@@ -468,16 +469,6 @@ class Car{
 
 int main(){
     int n, m, i;
-    //Parking myParking(n,m);
-    //myParking.display(i);
-
-    Parking myParking(4,7);
-    myParking.input(8, 3);
-    myParking.input(3, 3);
-    myParking.input(2,3);
-    myParking.input(34,3);
-    myParking.display(3);
-    myParking.output(34);
-    myParking.display(3);
-    
+    Parking myParking(n,m);
+    myParking.display(i);
 }
