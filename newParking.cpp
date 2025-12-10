@@ -335,7 +335,7 @@ class Parking{
     }
     
     // تابع کمکی برای نمایش یک Stack
-    void displayStack(int i) {
+    void display(int i) {
         if (i < 0 || i >= numbersOfColumn) {
             cout << " شماره Stack نامعتبر!" << endl;
             return;
