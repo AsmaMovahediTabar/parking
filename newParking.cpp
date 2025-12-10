@@ -477,7 +477,6 @@ class Car{
         cout << "Car created with ID: " << carID << endl;
     }
 };
-<<<<<<< HEAD
 
 int main(){
     int n, m, i;
@@ -485,76 +484,4 @@ int main(){
     Parking myParking(n,m);
     cin>>i;
     myParking.display(i);
-=======
-int main() {
-    int n, m;
-    cout << "Enter number of columns (n): ";
-    cin >> n;
-    cout << "Enter capacity of each column (m): ";
-    cin >> m;
-
-    Parking parking(n, m);   // پارکینگ ساخته میشه
-
-    int choice;
-    while (true) {
-        cout << "\n=== Parking Management System ===\n";
-        cout << "1. Car arrival (automatic -1 to exit)\n";
-        cout << "2. Car arrival to specific column\n";
-        cout << "3. Car departure (output)\n";
-        cout << "4. Find car\n";
-        cout << "5. Sort column (Merge Sort)\n";
-        cout << "6. Displacement (move column i to j)\n";
-        cout << "7. Exit\n";
-        cout << "Choose: ";
-        cin >> choice;
-
-        if (choice == 7) break;
-
-        int carID, i, j;
-
-        if (choice == 1) {
-            // ورود عادی (به اولین استک خالی)
-            cout << "Enter car IDs (-1 to stop): ";
-            while (cin >> carID && carID != -1) 
-                int parkedColumn = parking.input(carID);
-        }
-        else if (choice == 2) {
-            // ورود به استک خاص
-            cout << "Enter car ID: ";
-            cin >> carID;
-            cout << "Enter column number (0-" << n-1 << "): ";
-            cin >> i;
-            parking.input(carID, i);
-        }
-        else if (choice == 3) {
-            // خروج ماشین (فقط اگر top باشه)
-            cout << "Enter car ID to departure: ";
-            cin >> carID;
-            parking.output(carID);
-        }
-        else if (choice == 4) {
-            // جستجو
-            cout << "Enter car ID to find: ";
-            cin >> carID;
-            parking.find(carID);
-        }
-        else if (choice == 5) {
-            // مرتب‌سازی یک استک با Merge Sort
-            cout << "Enter column number to sort: ";
-            cin >> i;
-            parking.ordering(i);
-        }
-        else if (choice == 6) {
-            // جابجایی از استک i به استک j
-            cout << "Enter source column (i): ";
-            cin >> i;
-            cout << "Enter destination column (j): ";
-            cin >> j;
-            parking.displacement(i, j);
-        }
-    }
-
-    cout << "Good bye!" << endl;
-    return 0;
->>>>>>> main
 }
