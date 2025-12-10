@@ -86,23 +86,6 @@ public:
         Node* slow = head;
         Node* fast = head->next;
         
-        /*
-        حرکت اشاره‌گرها:
-        slow: یک قدم در هر تکرار
-        fast: دو قدم در هر تکرار
-        
-        وقتی fast به انتها رسید، slow در وسط است.
-        
-        مثال:
-        List: [1]→[2]→[3]→[4]→[5]→NULL
-        
-        Step 1: slow→[1], fast→[2]
-        Step 2: slow→[2], fast→[4]
-        Step 3: slow→[3], fast→NULL (ایست)
-        
-        نتیجه: وسط = [3]
-        */
-        
         while (fast != nullptr && fast->next != nullptr) {
             slow = slow->next;
             fast = fast->next->next;
@@ -154,7 +137,7 @@ public:
         head = mergeSortRecursive(head);
     }
     
-    // نمایش لیست برای دیباگ
+
     void display() {
         Node* temp = head;
         while (temp != nullptr) {
@@ -312,13 +295,11 @@ class Parking{
         if (columns[i].peek()==0) cout << "displacement done." <<endl;
     }
     void ordering(int i) {
-        // ۱. بررسی معتبر بودن شماره Stack
         if (i < 0 || i >= numbersOfColumn) {
             cout << " شماره Stack نامعتبر!" << endl;
             return;
         }
         
-        // ۲. بررسی خالی نبودن Stack
         if (columns[i].isEmpty()) {
             cout << " Stack " << i << " خالی است!" << endl;
             return;
@@ -334,7 +315,6 @@ class Parking{
         cout << string(60, '=') << endl;
     }
     
-    // تابع کمکی برای نمایش یک Stack
     void display(int i) {
         if (i < 0 || i >= numbersOfColumn) {
             cout << " شماره Stack نامعتبر!" << endl;
