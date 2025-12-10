@@ -194,7 +194,7 @@ class Stack{
     }
     // Peek: See top car without removing
     int peek(){
-        if (isEmpty){ 
+        if (isEmpty()){ 
             cout << "stack is empty." <<endl;
             return 0;}
         else{
@@ -228,13 +228,69 @@ class Stack{
     }
 };
 
-class Queue{};
+class Queue {
+private:
+    LinkedList list;
+public:
+// ورورد ماشین به صف ورودی پارکینگ که به آخر صف اضافه می شود
+    void enqueue(int carID) {
+        list.addEnd(carID);
+    }
+// پیچیدگی زمانی: چون از کلاس 
+//linkedlist ارث بری کرده
+// میشه O(n) 
+
+    // خارج کردن اولین ماشین از صف (dequeue)
+    //وقتی ماشین از صف ورودی، وارد پارکینگ می شود
+
+    int dequeue() {
+        if (list.head == nullptr) {
+            cout << "Queue is empty!" << endl;
+            return -1;
+        }
+
+        int carID = list.getFirst();   // شماره پلاک اولین ماشین را می خواند 
+        list.removeFirst();            // اولین Node را حذف می‌کنه
+        return carID;                  // شماره ماشین رو برمی‌گردونه تا داخل استک گذاشته بشه 
+    }
+
+    // فقط نگاه کردن به اولین ماشین بدون حذف
+    int peek() {
+        if (list.head == nullptr) {
+            cout << "Queue is empty!" << endl;
+            return -1;
+        }
+        return list.getFirst();
+    }
+
+    // چک کردن خالی بودن صف
+    bool isEmpty() {
+        return list.head == nullptr;
+    }
+
+    // نمایش تمام ماشین‌های تو صف ورودی (از اول تا آخر) 
+    void display() {
+        if (list.head == nullptr) {
+            cout << "Queue is empty!" << endl;
+            return;
+        }
+        
+        cout << "Queue: ";
+        Node* temp = list.head;
+        while (temp != nullptr) {
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+};
 
 class Parking{
     private:
     vector<Stack> columns;
     int numbersOfColumn;
     int columnCapacity;
+    Queue inputQueue;
 
     public:
     Parking(int n, int m) : numbersOfColumn(n), columnCapacity(m){
@@ -243,17 +299,101 @@ class Parking{
              << " columns, each of capacity " << columnCapacity << endl;
     }
 
+// تابع ورود خودرو به پارکینگ 
+// ماشین از صف ورودی وارد اولین استک خالی می شود 
+int input(int carID) {
+    // ماشین وارد صف ورودی میشه (enqueue)
+    inputQueue.enqueue(carID);
+    // اولین ماشین صف را برداشته و میگذاریم در پارکینگ (dequeue)
+    int car = inputQueue.dequeue();
+
+    // می‌گردیم دنبال اولین استک خالی  
+    for (int i = 0; i < numbersOfColumn; i++) {
+        if (!columns[i].isFull()) {
+            columns[i].push(car);
+            cout << "Car " << car << " parked in column " << i << endl;
+            return i;  // شماره ستون که ماشین پارک شده را بر می گرداند 
+        }
+    }
+
+    // اگر همه استک ها پر باشند
+    cout << "Parking is full." << endl;
     
-    int input(int carID){
+    // ماشین رو برمی‌گردونیم به صف چون پارکینگ پر بوده 
+    inputQueue.enqueue(car);
 
+    return -1;  // یعنی پارکینگ پر بود و ماشین پارک نشد
+}
+
+    // ورود به Stack مشخص (شماره i توسط کاربر تعیین می‌شه)
+    void input(int carID, int i) {
+         // ماشین وارد صف ورودی میشه (enqueue)
+        inputQueue.enqueue(carID);
+        // اولین ماشین صف را برداشته و میگذاریم در پارکینگ (dequeue)
+        int car = inputQueue.dequeue();
+
+        // چک می‌کنیم آیا شماره استک معتبره (i باید بین 0 تا n-1 باشه)
+        if (i < 0 || i >= numbersOfColumn) {
+            cout << "Invalid column number." << endl;
+            // ماشین رو برمی‌گردونیم به صف چون استک نامعتبر بود
+            inputQueue.enqueue(car);
+            return;
+        }
+
+        // چک می‌کنیم آیا استک پره یا نه
+        if (columns[i].isFull()) {
+            cout << "Column " << i << " is full." << endl;
+            // برمی‌گردونیم به صف ورودی
+            inputQueue.enqueue(car);
+            return;
+        }
+
+        // ماشین رو می‌ذاریم تو استک شماره i
+        columns[i].push(car);
+        cout << "Car " << car << " parked in column " << i << endl;
     }
+    
+    // تابع find - جستجوی ماشین در تمام استک‌ها
+    int find(int carID) {
+        for (int col = 0; col < numbersOfColumn; col++) {
+            vector<int> temp;          // برای نگه داشتن ماشین‌های خارج شده
+            int position = 1;          // موقعیت از 1 شروع می‌شه (top = 1)
 
-    void input(int carID,int i){
+            // همه ماشین‌های این ستون رو موقتاً خارج می‌کنیم
+            while (!columns[col].isEmpty()) {
+                int currentCar = columns[col].pop();
+                temp.push_back(currentCar);
 
-    }
+                if (currentCar == carID) {
+                    // پیدا شد!
+                    cout << "Car " << carID << " found in column " << col 
+                         << " at position " << position << " from top." << endl;
 
-    int find(int carID){
+                    // حالا بقیه ماشین‌های خارج شده رو برمی‌گردونیم (ترتیب حفظ می‌شه)
+                    // اول ماشین‌های زیرش رو برمی‌گردونیم، بعد خودش رو (چون خودش الان top جدیده)
+                    for (int k = temp.size() - 1; k >= 0; k--) {
+                        if (temp[k] != carID) {  // خودش رو دوباره push نمی‌کنیم (چون پیدا شده و نمی‌خوایم حذفش کنیم)
+                            columns[col].push(temp[k]);
+                        }
+                    }
+                    // خود ماشین پیدا شده رو هم برمی‌گردونیم بالای همه
+                    columns[col].push(carID);
 
+                    return col;  // شماره ستون رو برمی‌گردونیم
+                }
+
+                position++;
+            }
+
+            // اگر تا اینجا پیدا نشد → همه ماشین‌های خارج شده رو دقیقاً با همان ترتیب قبلی برمی‌گردونیم
+            for (int k = temp.size() - 1; k >= 0; k--) {
+                columns[col].push(temp[k]);
+            }
+        }
+
+        // اگر هیچ جا پیدا نشد
+        cout << "Car " << carID << " not found." << endl;
+        return -1;
     }
 
     bool output(int carID){
@@ -337,6 +477,7 @@ class Car{
         cout << "Car created with ID: " << carID << endl;
     }
 };
+<<<<<<< HEAD
 
 int main(){
     int n, m, i;
@@ -344,4 +485,76 @@ int main(){
     Parking myParking(n,m);
     cin>>i;
     myParking.display(i);
+=======
+int main() {
+    int n, m;
+    cout << "Enter number of columns (n): ";
+    cin >> n;
+    cout << "Enter capacity of each column (m): ";
+    cin >> m;
+
+    Parking parking(n, m);   // پارکینگ ساخته میشه
+
+    int choice;
+    while (true) {
+        cout << "\n=== Parking Management System ===\n";
+        cout << "1. Car arrival (automatic -1 to exit)\n";
+        cout << "2. Car arrival to specific column\n";
+        cout << "3. Car departure (output)\n";
+        cout << "4. Find car\n";
+        cout << "5. Sort column (Merge Sort)\n";
+        cout << "6. Displacement (move column i to j)\n";
+        cout << "7. Exit\n";
+        cout << "Choose: ";
+        cin >> choice;
+
+        if (choice == 7) break;
+
+        int carID, i, j;
+
+        if (choice == 1) {
+            // ورود عادی (به اولین استک خالی)
+            cout << "Enter car IDs (-1 to stop): ";
+            while (cin >> carID && carID != -1) 
+                int parkedColumn = parking.input(carID);
+        }
+        else if (choice == 2) {
+            // ورود به استک خاص
+            cout << "Enter car ID: ";
+            cin >> carID;
+            cout << "Enter column number (0-" << n-1 << "): ";
+            cin >> i;
+            parking.input(carID, i);
+        }
+        else if (choice == 3) {
+            // خروج ماشین (فقط اگر top باشه)
+            cout << "Enter car ID to departure: ";
+            cin >> carID;
+            parking.output(carID);
+        }
+        else if (choice == 4) {
+            // جستجو
+            cout << "Enter car ID to find: ";
+            cin >> carID;
+            parking.find(carID);
+        }
+        else if (choice == 5) {
+            // مرتب‌سازی یک استک با Merge Sort
+            cout << "Enter column number to sort: ";
+            cin >> i;
+            parking.ordering(i);
+        }
+        else if (choice == 6) {
+            // جابجایی از استک i به استک j
+            cout << "Enter source column (i): ";
+            cin >> i;
+            cout << "Enter destination column (j): ";
+            cin >> j;
+            parking.displacement(i, j);
+        }
+    }
+
+    cout << "Good bye!" << endl;
+    return 0;
+>>>>>>> main
 }
