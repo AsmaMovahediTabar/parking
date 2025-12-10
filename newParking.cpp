@@ -79,6 +79,92 @@ public:
             delete temp;
         }
     }
+
+    Node* findMiddle(Node* head) {
+        if (head == nullptr) return head;
+        
+        Node* slow = head;
+        Node* fast = head->next;
+        
+        /*
+        حرکت اشاره‌گرها:
+        slow: یک قدم در هر تکرار
+        fast: دو قدم در هر تکرار
+        
+        وقتی fast به انتها رسید، slow در وسط است.
+        
+        مثال:
+        List: [1]→[2]→[3]→[4]→[5]→NULL
+        
+        Step 1: slow→[1], fast→[2]
+        Step 2: slow→[2], fast→[4]
+        Step 3: slow→[3], fast→NULL (ایست)
+        
+        نتیجه: وسط = [3]
+        */
+        
+        while (fast != nullptr && fast->next != nullptr) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        
+        return slow;
+    }
+    
+    // ادغام دو لیست مرتب شده به صورت بازگشتی
+    Node* mergeRecursive(Node* left, Node* right) {
+        // حالت پایه
+        if (left == nullptr) return right;
+        if (right == nullptr) return left;
+        
+        // انتخاب گره کوچک‌تر و ادامه بازگشتی
+        if (left->data <= right->data) {
+            left->next = mergeRecursive(left->next, right);
+            return left;
+        } else {
+            right->next = mergeRecursive(left, right->next);
+            return right;
+        }
+    }
+    
+    // مرج‌سورت بازگشتی اصلی
+    Node* mergeSortRecursive(Node* head) {
+        // حالت پایه: لیست خالی یا تک‌عنصری
+        if (head == nullptr || head->next == nullptr) {
+            return head;
+        }
+        
+        // ۱. پیدا کردن وسط لیست
+        Node* middle = findMiddle(head);
+        Node* nextOfMiddle = middle->next;
+        
+        // ۲. جدا کردن لیست به دو نیمه
+        middle->next = nullptr;
+        
+        // ۳. مرتب‌سازی بازگشتی هر نیمه
+        Node* left = mergeSortRecursive(head);
+        Node* right = mergeSortRecursive(nextOfMiddle);
+        
+        // ۴. ادغام دو نیمه مرتب شده
+        return mergeRecursive(left, right);
+    }
+    
+    // فراخوانی اصلی مرج‌سورت
+    void mergeSort() {
+        head = mergeSortRecursive(head);
+    }
+    
+    // نمایش لیست برای دیباگ
+    void display() {
+        Node* temp = head;
+        while (temp != nullptr) {
+            cout << temp->data;
+            if (temp->next != nullptr) cout << " → ";
+            temp = temp->next;
+        }
+        cout << " → NULL" << endl;
+    }
+
 };
 
 class Stack{
@@ -133,6 +219,30 @@ class Stack{
             return carID;
         }
     }
+
+    void sort() {
+        cout << "مرتب‌سازی Stack با مرج‌سورت بازگشتی..." << endl;
+        cout << "قبل از مرتب‌سازی: ";
+        display();
+        
+        // فراخوانی مرج‌سورت روی LinkedList
+        list.mergeSort();
+        
+        cout << "بعد از مرتب‌سازی: ";
+        display();
+        cout << "مرتب‌سازی تکمیل شد!" << endl;
+    }
+    
+    // نمایش Stack (از بالا به پایین)
+    void display() {
+        if (list.head == nullptr) {
+            cout << "Stack خالی است" << endl;
+            return;
+        }
+        
+        cout << "Top → ";
+        list.display();
+    }
 };
 
 class Queue{};
@@ -175,128 +285,6 @@ class Parking{
         return false;
     }
 
-     void ordering(int i) {
-
-        if (columns[i].isEmpty()) {
-            cout << "Column " << i << " is empty!" << endl;
-            return;
-        }
-        
-        // Step 1: Extract all cars from stack to array
-        vector<int> cars;
-        while (!columns[i].isEmpty()) {
-            cars.push_back(columns[i].pop());
-        }
-        
-        // Step 2: Apply merge sort recursively
-        mergeSort(cars, 0, cars.size() - 1);
-        
-        // Step 3: Push sorted cars back to stack
-        // Push in reverse to get ascending order from top
-        for (int j = cars.size() - 1; j >= 0; j--) {
-            columns[i].push(cars[j]);
-        }
-        
-        cout << "✓ Merge sort completed for column " << i << endl;
-    }
-
-    // Recursive merge sort for vector
-    void mergeSort(vector<int>& arr, int left, int right) {
-        /*
-        ████ RECURSIVE CONTROL FLOW ████
-        
-        Base case: Single element
-        if (left >= right) return;
-        
-        Divide: Find middle point
-        int mid = left + (right - left) / 2;
-        
-        Conquer: Sort both halves recursively
-        mergeSort(arr, left, mid);      // Left half
-        mergeSort(arr, mid + 1, right); // Right half
-        
-        Combine: Merge sorted halves
-        merge(arr, left, mid, right);
-        */
-        
-        if (left >= right) return;
-        
-        int mid = left + (right - left) / 2;
-        
-        // Recursively sort left and right halves
-        mergeSort(arr, left, mid);
-        mergeSort(arr, mid + 1, right);
-        
-        // Merge the sorted halves
-        merge(arr, left, mid, right);
-    }
-    
-    // Merge two sorted subarrays
-    void merge(vector<int>& arr, int left, int mid, int right) {
-        /*
-        ████ MERGE PROCESS VISUALIZATION ████
-        
-        Example: arr = [27, 38, 43, 3, 9]
-                 left=0, mid=2, right=4
-        
-        Step 1: Create temporary arrays
-            leftArr = [27, 38, 43] (size = 3)
-            rightArr = [3, 9] (size = 2)
-        
-        Step 2: Merge with two-pointer technique
-            i=0, j=0, k=left=0
-            Compare leftArr[0]=27 vs rightArr[0]=3 → 27>3 → arr[0]=3
-            i=0, j=1, k=1
-            Compare 27 vs 9 → 27>9 → arr[1]=9
-            i=0, j=2 (end), copy remaining leftArr
-            arr[2]=27, arr[3]=38, arr[4]=43
-        
-        Result: arr = [3, 9, 27, 38, 43]
-        */
-        
-        int n1 = mid - left + 1;  // Size of left subarray
-        int n2 = right - mid;     // Size of right subarray
-        
-        // Create temporary arrays
-        vector<int> leftArr(n1);
-        vector<int> rightArr(n2);
-        
-        // Copy data to temp arrays
-        for (int p = 0; p < n1; p++)
-            leftArr[p] = arr[left + p];
-        for (int q = 0; q < n2; q++)
-            rightArr[q] = arr[mid + 1 + q];
-        
-        // Merge the temp arrays back
-        int i = 0, j = 0, k = left;
-        
-        while (i < n1 && j < n2) {
-            if (leftArr[i] <= rightArr[j]) {
-                arr[k] = leftArr[i];
-                i++;
-            } else {
-                arr[k] = rightArr[j];
-                j++;
-            }
-            k++;
-        }
-        
-        // Copy remaining elements of leftArr
-        while (i < n1) {
-            arr[k] = leftArr[i];
-            i++;
-            k++;
-        }
-        
-        // Copy remaining elements of rightArr
-        while (j < n2) {
-            arr[k] = rightArr[j];
-            j++;
-            k++;
-        }
-    }
-    
-
     void displacement(int i, int j){
         int d = j;
         int r=0,s=0;
@@ -323,38 +311,39 @@ class Parking{
         }
         if (columns[i].peek()==0) cout << "displacement done." <<endl;
     }
-
-    void display(int i){
-    if(i < 0 || i >= numbersOfColumn) {
-        cout << "Invalid column index!" << endl;
-        return;
+    void ordering(int i) {
+        // ۱. بررسی معتبر بودن شماره Stack
+        if (i < 0 || i >= numbersOfColumn) {
+            cout << " شماره Stack نامعتبر!" << endl;
+            return;
+        }
+        
+        // ۲. بررسی خالی نبودن Stack
+        if (columns[i].isEmpty()) {
+            cout << " Stack " << i << " خالی است!" << endl;
+            return;
+        }
+        
+        cout << "\n" << string(60, '=') << endl;
+        cout << "مرتب‌سازی Stack شماره " << i << " با مرج‌سورت بازگشتی" << endl;
+        cout << string(60, '=') << endl;
+        
+        // ۳. فراخوانی تابع sort روی Stack
+        columns[i].sort();
+        
+        cout << string(60, '=') << endl;
     }
     
-    if(columns[i].isEmpty()) {
-        cout << "Column " << i << " is empty." << endl;
-        return;
+    // تابع کمکی برای نمایش یک Stack
+    void displayStack(int i) {
+        if (i < 0 || i >= numbersOfColumn) {
+            cout << " شماره Stack نامعتبر!" << endl;
+            return;
+        }
+        
+        cout << "Stack " << i << ": ";
+        columns[i].display();
     }
-    
-    cout << "Column " << i << " (from top to bottom): ";
-    
-    // Create a temporary stack to reverse the order for display
-    Stack temp(columnCapacity);
-    Stack& currentColumn = columns[i];
-    
-    // Transfer all cars to temporary stack (reverses order)
-    while(!currentColumn.isEmpty()) {
-        int carID = currentColumn.pop();
-        cout << carID << " ";
-        temp.push(carID);
-    }
-    
-    // Restore cars back to original column
-    while(!temp.isEmpty()) {
-        currentColumn.push(temp.pop());
-    }
-    
-    cout << endl;
-}
 };
 
 class Car{
