@@ -7,6 +7,7 @@ public:
     int data;
     Node* next;
 
+    //O(1)
     Node(int data){
         this->data = data;
         this->next = nullptr;
@@ -19,14 +20,16 @@ public:
 
 public:
 
+    //O(1)
     LinkedList() {
         this->head = nullptr;
     }
-
+    //O(m)
     ~LinkedList() {
         clear();
     }
 
+    //O(1)
     void addFirst(int data){
         Node* newNode = new Node(data);
 
@@ -38,6 +41,7 @@ public:
         }
     }
 
+    //O(m)
     void addEnd(int data){
         Node* newNode = new Node(data);
 
@@ -53,6 +57,7 @@ public:
         temp->next = newNode;
     }
     
+    //O(1)
     bool removeFirst() {
         if (head == nullptr) {
             cout << "List is empty!" << endl;
@@ -65,13 +70,15 @@ public:
         return true;
     }
     
-     int getFirst() {
+    //O(1)
+    int getFirst() {
         if (head == nullptr) {
             return -1;  // Or throw exception
         }
         return head->data;
     }
 
+    //O(m)
     void clear() {
         while (head != nullptr) {
             Node* temp = head;
@@ -80,6 +87,7 @@ public:
         }
     }
 
+    //O(m)
     Node* findMiddle(Node* head) {
         if (head == nullptr) return head;
         
@@ -137,7 +145,7 @@ public:
         head = mergeSortRecursive(head);
     }
     
-
+    //O(m)
     void display() {
         Node* temp = head;
         while (temp != nullptr) {
@@ -157,20 +165,24 @@ class Stack{
     int size;
 
     public:
+    //O(1)
     Stack(int c){
         capacity = c;
         size = 0;
     }
+    //O(1)
     bool isEmpty(){
         if (size==0) return true;
         else return false;
     }
+    //O(1)
     bool isFull(){
         if(size == capacity) return true;
         else return false;
     }
 
     // Push: Add car to stack (park car)
+    //O(1)
     bool push(int carID){
         if (isFull()){
             cout << "stack is full."<< endl;
@@ -182,6 +194,8 @@ class Stack{
         }
         
     }
+
+    //O(1)
     // Pop: Remove car from top of stack
     int pop(){
         if (isEmpty()){
@@ -194,6 +208,8 @@ class Stack{
             return carID;
         }
     }
+
+    //O(1)
     // Peek: See top car without removing
     int peek(){
         if (isEmpty()){ 
@@ -209,6 +225,7 @@ class Stack{
         list.mergeSort();
     }
     
+    //O(m)
     // نمایش Stack (از بالا به پایین)
     void display() {
         if (list.head == nullptr) {
@@ -286,6 +303,7 @@ class Parking{
     Queue inputQueue;
 
     public:
+    //O(n)
     Parking(int n, int m) : numbersOfColumn(n), columnCapacity(m){
         for (int i=0; i < numbersOfColumn; i++)  columns.push_back(Stack(columnCapacity));
         cout << "Parking created with " << numbersOfColumn
@@ -389,6 +407,7 @@ class Parking{
         return -1;
     }
 
+    //O(n)
     bool output(int carID){
         for(int i=0; i<=numbersOfColumn; i++){
             if(carID == columns[i].peek()){
@@ -401,6 +420,7 @@ class Parking{
         return false;
     }
 
+    //O(m*n)
     void displacement(int i, int j){
         if(i==j) return;
         int d = j;
@@ -444,6 +464,7 @@ class Parking{
         columns[i].sort();
     }
     
+    //O(m)
     void display(int i) {
         if (i < 0 || i >= numbersOfColumn) {
             cout << "stack number is invalid." << endl;
