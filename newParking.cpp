@@ -142,10 +142,10 @@ public:
         Node* temp = head;
         while (temp != nullptr) {
             cout << temp->data;
-            if (temp->next != nullptr) cout << " → ";
+            if (temp->next != nullptr) cout << "-";
             temp = temp->next;
         }
-        cout << " → NULL" << endl;
+        cout << " - NULL" << endl;
     }
 
 };
@@ -184,7 +184,9 @@ class Stack{
     }
     // Pop: Remove car from top of stack
     int pop(){
-        if (isEmpty()) cout << "stack is empty." <<endl;
+        if (isEmpty()){
+            cout << "stack is empty." <<endl;
+            return -1;}
         else{
             int carID = list.getFirst();
             list.removeFirst();
@@ -195,8 +197,7 @@ class Stack{
     // Peek: See top car without removing
     int peek(){
         if (isEmpty()){ 
-            cout << "stack is empty." <<endl;
-            return 0;}
+            return -1;}
         else{
             int carID = list.head->data;
             return carID;
@@ -204,26 +205,18 @@ class Stack{
     }
 
     void sort() {
-        cout << "مرتب‌سازی Stack با مرج‌سورت بازگشتی..." << endl;
-        cout << "قبل از مرتب‌سازی: ";
-        display();
-        
         // فراخوانی مرج‌سورت روی LinkedList
         list.mergeSort();
-        
-        cout << "بعد از مرتب‌سازی: ";
-        display();
-        cout << "مرتب‌سازی تکمیل شد!" << endl;
     }
     
     // نمایش Stack (از بالا به پایین)
     void display() {
         if (list.head == nullptr) {
-            cout << "Stack خالی است" << endl;
+            cout << "Stack is empty." << endl;
             return;
         }
         
-        cout << "Top → ";
+        cout << "Top - ";
         list.display();
     }
 };
@@ -296,19 +289,19 @@ class Parking{
     Parking(int n, int m) : numbersOfColumn(n), columnCapacity(m){
         for (int i=0; i < numbersOfColumn; i++)  columns.push_back(Stack(columnCapacity));
         cout << "Parking created with " << numbersOfColumn
-             << " columns, each of capacity " << columnCapacity << endl;
+             << " columns, each have " << columnCapacity << " capacity." << endl;
     }
 
-// تابع ورود خودرو به پارکینگ 
-// ماشین از صف ورودی وارد اولین استک خالی می شود 
-int input(int carID) {
-    // ماشین وارد صف ورودی میشه (enqueue)
-    inputQueue.enqueue(carID);
-    // اولین ماشین صف را برداشته و میگذاریم در پارکینگ (dequeue)
-    int car = inputQueue.dequeue();
+    // تابع ورود خودرو به پارکینگ 
+    // ماشین از صف ورودی وارد اولین استک خالی می شود 
+    int input(int carID) {
+        // ماشین وارد صف ورودی میشه (enqueue)
+        inputQueue.enqueue(carID);
+        // اولین ماشین صف را برداشته و میگذاریم در پارکینگ (dequeue)
+        int car = inputQueue.dequeue();
 
-    // می‌گردیم دنبال اولین استک خالی  
-    for (int i = 0; i < numbersOfColumn; i++) {
+        // می‌گردیم دنبال اولین استک خالی  
+        for (int i = 0; i < numbersOfColumn; i++) {
         if (!columns[i].isFull()) {
             columns[i].push(car);
             cout << "Car " << car << " parked in column " << i << endl;
@@ -434,30 +427,25 @@ int input(int carID) {
         }
         if (columns[i].peek()==0) cout << "displacement done." <<endl;
     }
+
     void ordering(int i) {
         if (i < 0 || i >= numbersOfColumn) {
-            cout << " شماره Stack نامعتبر!" << endl;
+            cout << "stack number is invalid." << endl;
             return;
         }
         
         if (columns[i].isEmpty()) {
-            cout << " Stack " << i << " خالی است!" << endl;
+            cout << " Stack " << i << "is empty." << endl;
             return;
         }
         
-        cout << "\n" << string(60, '=') << endl;
-        cout << "مرتب‌سازی Stack شماره " << i << " با مرج‌سورت بازگشتی" << endl;
-        cout << string(60, '=') << endl;
-        
         // ۳. فراخوانی تابع sort روی Stack
         columns[i].sort();
-        
-        cout << string(60, '=') << endl;
     }
     
     void display(int i) {
         if (i < 0 || i >= numbersOfColumn) {
-            cout << " شماره Stack نامعتبر!" << endl;
+            cout << "stack number is invalid." << endl;
             return;
         }
         
@@ -480,8 +468,16 @@ class Car{
 
 int main(){
     int n, m, i;
-    cin>>n>>m;
-    Parking myParking(n,m);
-    cin>>i;
-    myParking.display(i);
+    //Parking myParking(n,m);
+    //myParking.display(i);
+
+    Parking myParking(4,7);
+    myParking.input(8, 3);
+    myParking.input(3, 3);
+    myParking.input(2,3);
+    myParking.input(34,3);
+    myParking.display(3);
+    myParking.output(34);
+    myParking.display(3);
+    
 }
