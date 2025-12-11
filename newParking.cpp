@@ -236,6 +236,23 @@ class Stack{
         cout << "Top - ";
         list.display();
     }
+
+    // O(m) - جستجوی ماشین
+    int findPosition(int carID) {
+    if (isEmpty()) return -1;  // خالی است
+    
+    Node* temp = list.head;
+    int position = 1;  // موقعیت از بالا شروع می‌شود
+    
+    while (temp != nullptr) {
+        if (temp->data == carID) {
+            return position;
+        }
+        temp = temp->next;
+        position++;
+    }
+    return -1;  // پیدا نشد
+}
 };
 
 class Queue {
@@ -368,51 +385,24 @@ class Parking{
         columns[i].push(car);
         cout << "Car " << car << " parked in column " << i << endl;
     }
-    // O(n * m)
-    //جایی که n حداکثر تعداد ستون ها و m حداکثر ظرفیت هر ستون
-    // تابع find - جستجوی ماشین در تمام استک‌ها
+
+    // O(n * m) - جستجوی ماشین بدون تغییر ترتیب
     int find(int carID) {
-        for (int col = 0; col < numbersOfColumn; col++) {
-            vector<int> temp;          // برای نگه داشتن ماشین‌های خارج شده
-            int position = 1;          // موقعیت از 1 شروع می‌شه (top = 1)
-
-            // همه ماشین‌های این ستون رو موقتاً خارج می‌کنیم
-            while (!columns[col].isEmpty()) {
-                int currentCar = columns[col].pop();
-                temp.push_back(currentCar);
-
-                if (currentCar == carID) {
-                    // پیدا شد!
-                    cout << "Car " << carID << " found in column " << col 
-                         << " at position " << position << " from top." << endl;
-
-                    // حالا بقیه ماشین‌های خارج شده رو برمی‌گردونیم (ترتیب حفظ می‌شه)
-                    // اول ماشین‌های زیرش رو برمی‌گردونیم، بعد خودش رو (چون خودش الان top جدیده)
-                    for (int k = temp.size() - 1; k >= 0; k--) {
-                        if (temp[k] != carID) {  // خودش رو دوباره push نمی‌کنیم (چون پیدا شده و نمی‌خوایم حذفش کنیم)
-                            columns[col].push(temp[k]);
-                        }
-                    }
-                    // خود ماشین پیدا شده رو هم برمی‌گردونیم بالای همه
-                    columns[col].push(carID);
-
-                    return col;  // شماره ستون رو برمی‌گردونیم
-                }
-
-                position++;
-            }
-
-            // اگر تا اینجا پیدا نشد → همه ماشین‌های خارج شده رو دقیقاً با همان ترتیب قبلی برمی‌گردونیم
-            for (int k = temp.size() - 1; k >= 0; k--) {
-                columns[col].push(temp[k]);
-            }
+    for (int col = 0; col < numbersOfColumn; col++) {
+        int position = columns[col].findPosition(carID);
+        
+        if (position != -1) {
+            // پیدا شد!
+            cout << "Car " << carID << " found in column " << col 
+                 << " at position " << position << " from top." << endl;
+            return col;  // شماره ستون را برمی‌گرداند
         }
-
-        // اگر هیچ جا پیدا نشد
-        cout << "Car " << carID << " not found." << endl;
-        return -1;
     }
-
+    
+    // اگر هیچ جا پیدا نشد
+    cout << "Car " << carID << " not found." << endl;
+    return -1;
+}
     //O(n)
     bool output(int carID){
         for(int i=0; i<=numbersOfColumn; i++){
@@ -558,7 +548,7 @@ int main() {
     myParking.find(303);
 
     // نمایش پس از جستجو
-    cout << "\nParking status after find (car 303 should be at top):" << endl;
+    cout << "\nParking status after find" << endl;
     for (int i = 0; i < n; i++) {
         myParking.display(i);
     }
