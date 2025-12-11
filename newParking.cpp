@@ -421,34 +421,75 @@ class Parking{
     }
 
     //O(m*n)
-    void displacement(int i, int j){
-        if(i==j) return;
-        int d = j;
-        int r=0,s=0;
-        while(columns[i].isEmpty()!= true){
-            if (columns[d].isFull() && d != numbersOfColumn-1){
-                d++;
-                s++;
-                continue;
-            }
-            if (columns[d].isFull() && d == numbersOfColumn-1){
-                d=0;
-                continue;
-                s++;
-            }
-            if (columns[d].isFull() && d == i){
-                d++;
-                continue;
-            }
-            if(s == numbersOfColumn-2){
-                cout << "i try all of stacks and we didnt have enough empty space." << endl;
+    void displacement(int i, int j) {
+    // بررسی صحت اندیس‌ها
+    if (i < 0 || i >= numbersOfColumn || j < 0 || j >= numbersOfColumn) {
+        cout << "Invalid stack indices!" << endl;
+        return;
+    }
+    
+    // اگر منبع و مقصد یکی باشند
+    if (i == j) {
+        cout << "Source and destination are the same!" << endl;
+        return;
+    }
+    
+    // اگر ستون منبع خالی باشد
+    if (columns[i].isEmpty()) {
+        cout << "Source stack " << i << " is empty!" << endl;
+        return;
+    }
+    
+    cout << "\n=== Displacing cars from Stack " << i << " to Stack " << j << " ===" << endl;
+    
+    int destination = j;  // ستون مقصد فعلی
+    int attempts = 0;     // تعداد تلاش‌ها برای یافتن ستون خالی
+    int carsMoved = 0;    // تعداد ماشین‌های جابجا شده
+    
+    // تا زمانی که ستون i خالی نشده است
+    while (!columns[i].isEmpty()) {
+        // اگر ستون مقصد فعلی پر باشد یا همان ستون مبدا باشد
+        if (columns[destination].isFull() || destination == i) {
+            // ذخیره نقطه شروع جستجو
+            int startSearch = destination;
+            bool foundSpace = false;
+            
+            // جستجوی دورانی برای یافتن ستون با فضای خالی
+            do {
+                destination = (destination + 1) % numbersOfColumn;  // حرکت به ستون بعدی (دورانی)
+                attempts++;
+                
+                // اگر به نقطه شروع بازگشتیم (تمام ستون‌ها را بررسی کردیم)
+                if (destination == startSearch) {
+                    cout << "✗ Checked all " << numbersOfColumn << " stacks, no available space found!" << endl;
+                    break;
+                }
+                
+                // اگر ستون مقصد i نباشد و پر هم نباشد
+                if (destination != i && !columns[destination].isFull()) {
+                    foundSpace = true;
+                    cout << "  Found space in Stack " << destination << endl;
+                    break;
+                }
+                
+            } while (true);
+            
+            // اگر جای خالی پیدا نشد، عملیات را متوقف کن
+            if (!foundSpace) {
                 break;
             }
-            columns[j].push(columns[i].pop());
         }
-        if (columns[i].peek()==0) cout << "displacement done." <<endl;
+        
+        // جابجایی یک ماشین
+        int carID = columns[i].pop();
+        columns[destination].push(carID);
+        carsMoved++;
+        
+        cout << "  Car " << carID << " moved: Stack " << i << " → Stack " << destination << endl;
+        
     }
 
+    }
     void ordering(int i) {
         if (i < 0 || i >= numbersOfColumn) {
             cout << "stack number is invalid." << endl;
@@ -489,7 +530,15 @@ class Car{
 };
 
 int main(){
-    int n, m, i;
-    Parking myParking(n,m);
-    myParking.display(i);
+    int n=3, m=2, i;
+    Parking p(n,m);
+    p.display(i);
+    p.input(10,1);
+    p.input(11,1);
+    p.input(13,2);
+    p.input(14,0);
+    p.display(1);
+    p.display(0);
+    p.displacement(1,2);
+    for(int j=0;j<n;j++) p.display(j);
 }
