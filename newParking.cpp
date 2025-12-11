@@ -236,6 +236,23 @@ class Stack{
         cout << "Top - ";
         list.display();
     }
+
+    // O(m) - جستجوی ماشین
+    int findPosition(int carID) {
+    if (isEmpty()) return -1;  // خالی است
+    
+    Node* temp = list.head;
+    int position = 1;  // موقعیت از بالا شروع می‌شود
+    
+    while (temp != nullptr) {
+        if (temp->data == carID) {
+            return position;
+        }
+        temp = temp->next;
+        position++;
+    }
+    return -1;  // پیدا نشد
+}
 };
 
 class Queue {
@@ -250,9 +267,9 @@ public:
 //linkedlist ارث بری کرده
 // میشه O(n) 
 
+    // O(1)
     // خارج کردن اولین ماشین از صف (dequeue)
     //وقتی ماشین از صف ورودی، وارد پارکینگ می شود
-
     int dequeue() {
         if (list.head == nullptr) {
             cout << "Queue is empty!" << endl;
@@ -264,6 +281,7 @@ public:
         return carID;                  // شماره ماشین رو برمی‌گردونه تا داخل استک گذاشته بشه 
     }
 
+    // O(1)
     // فقط نگاه کردن به اولین ماشین بدون حذف
     int peek() {
         if (list.head == nullptr) {
@@ -273,11 +291,14 @@ public:
         return list.getFirst();
     }
 
+    // O(1)
     // چک کردن خالی بودن صف
     bool isEmpty() {
         return list.head == nullptr;
     }
 
+    // O(N)
+    //n تعداد ماشین های در صف 
     // نمایش تمام ماشین‌های تو صف ورودی (از اول تا آخر) 
     void display() {
         if (list.head == nullptr) {
@@ -295,7 +316,7 @@ public:
     }
 };
 
-class Parking{
+class Parking {
     private:
     vector<Stack> columns;
     int numbersOfColumn;
@@ -309,7 +330,8 @@ class Parking{
         cout << "Parking created with " << numbersOfColumn
              << " columns, each have " << columnCapacity << " capacity." << endl;
     }
-
+    // O(N)
+    //  که n تعداد ستون هاست 
     // تابع ورود خودرو به پارکینگ 
     // ماشین از صف ورودی وارد اولین استک خالی می شود 
     int input(int carID) {
@@ -334,8 +356,8 @@ class Parking{
     inputQueue.enqueue(car);
 
     return -1;  // یعنی پارکینگ پر بود و ماشین پارک نشد
-}
-
+    }
+    // O(1)
     // ورود به Stack مشخص (شماره i توسط کاربر تعیین می‌شه)
     void input(int carID, int i) {
          // ماشین وارد صف ورودی میشه (enqueue)
@@ -363,50 +385,24 @@ class Parking{
         columns[i].push(car);
         cout << "Car " << car << " parked in column " << i << endl;
     }
-    
-    // تابع find - جستجوی ماشین در تمام استک‌ها
+
+    // O(n * m) - جستجوی ماشین بدون تغییر ترتیب
     int find(int carID) {
-        for (int col = 0; col < numbersOfColumn; col++) {
-            vector<int> temp;          // برای نگه داشتن ماشین‌های خارج شده
-            int position = 1;          // موقعیت از 1 شروع می‌شه (top = 1)
-
-            // همه ماشین‌های این ستون رو موقتاً خارج می‌کنیم
-            while (!columns[col].isEmpty()) {
-                int currentCar = columns[col].pop();
-                temp.push_back(currentCar);
-
-                if (currentCar == carID) {
-                    // پیدا شد!
-                    cout << "Car " << carID << " found in column " << col 
-                         << " at position " << position << " from top." << endl;
-
-                    // حالا بقیه ماشین‌های خارج شده رو برمی‌گردونیم (ترتیب حفظ می‌شه)
-                    // اول ماشین‌های زیرش رو برمی‌گردونیم، بعد خودش رو (چون خودش الان top جدیده)
-                    for (int k = temp.size() - 1; k >= 0; k--) {
-                        if (temp[k] != carID) {  // خودش رو دوباره push نمی‌کنیم (چون پیدا شده و نمی‌خوایم حذفش کنیم)
-                            columns[col].push(temp[k]);
-                        }
-                    }
-                    // خود ماشین پیدا شده رو هم برمی‌گردونیم بالای همه
-                    columns[col].push(carID);
-
-                    return col;  // شماره ستون رو برمی‌گردونیم
-                }
-
-                position++;
-            }
-
-            // اگر تا اینجا پیدا نشد → همه ماشین‌های خارج شده رو دقیقاً با همان ترتیب قبلی برمی‌گردونیم
-            for (int k = temp.size() - 1; k >= 0; k--) {
-                columns[col].push(temp[k]);
-            }
+    for (int col = 0; col < numbersOfColumn; col++) {
+        int position = columns[col].findPosition(carID);
+        
+        if (position != -1) {
+            // پیدا شد!
+            cout << "Car " << carID << " found in column " << col 
+                 << " at position " << position << " from top." << endl;
+            return col;  // شماره ستون را برمی‌گرداند
         }
-
-        // اگر هیچ جا پیدا نشد
-        cout << "Car " << carID << " not found." << endl;
-        return -1;
     }
-
+    
+    // اگر هیچ جا پیدا نشد
+    cout << "Car " << carID << " not found." << endl;
+    return -1;
+    }
     //O(n)
     bool output(int carID){
         for(int i=0; i<=numbersOfColumn; i++){
@@ -487,10 +483,10 @@ class Parking{
         
         cout << "  Car " << carID << " moved: Stack " << i << " → Stack " << destination << endl;
         
-    }
+    }}
 
-    }
-    void ordering(int i) {
+    // O(M log M)
+    void ordering(int i){
         if (i < 0 || i >= numbersOfColumn) {
             cout << "stack number is invalid." << endl;
             return;
@@ -515,6 +511,11 @@ class Parking{
         cout << "Stack " << i << ": ";
         columns[i].display();
     }
+
+    void displayInputQueue() {
+    cout << "Input Queue status:" << endl;
+    inputQueue.display();
+}
 };
 
 class Car{
@@ -529,16 +530,101 @@ class Car{
     }
 };
 
-int main(){
-    int n=3, m=2, i;
-    Parking p(n,m);
-    p.display(i);
-    p.input(10,1);
-    p.input(11,1);
-    p.input(13,2);
-    p.input(14,0);
-    p.display(1);
-    p.display(0);
-    p.displacement(1,2);
-    for(int j=0;j<n;j++) p.display(j);
+int main() {
+    // تعریف تعداد ستون‌ها (n) و ظرفیت هر ستون (m) 
+    int n = 2;  // تعداد ستون‌ها
+    int m = 2;  // ظرفیت هر ستون
+
+    // ایجاد پارکینگ
+    Parking myParking(n, m);
+
+    // تست ایجاد ماشین‌ها
+    Car car1(101);
+    Car car2(202);
+    Car car3(303);
+    Car car4(404);
+    Car car5(505);
+    Car car6(606);
+    Car car7(707);
+
+    // تست ورودی اولیه: پارک کردن ماشین‌ها تا پر شدن پارکینگ
+    cout << "\nTesting initial inputs:" << endl;
+    myParking.input(101);  // باید به ستون 0 برود
+    myParking.input(202);  // ستون 0 (پر می‌شود)
+    myParking.input(303);  // ستون 1
+    myParking.input(404);  // ستون 1 (پر می‌شود)
+
+    // نمایش وضعیت پارکینگ پس از پر شدن
+    cout << "\nInitial parking status (parking full):" << endl;
+    for (int i = 0; i < n; i++) {
+        myParking.display(i);
+    }
+
+    // تست صف: ورودی وقتی پارکینگ پر است (باید به صف بروند)
+    cout << "\nTesting input when parking is full (cars should go to queue):" << endl;
+    myParking.input(505);  // به صف می‌رود
+    myParking.input(606);  // به صف می‌رود
+
+    // نمایش وضعیت صف (باید 505 606 نشان دهد)
+    myParking.displayInputQueue();
+
+    // تست خارج کردن ماشین برای خالی کردن فضا و چک dequeue
+    cout << "\nFreeing space by outputting a car and re-inputting:" << endl;
+    myParking.output(202);  // حذف از بالای ستون 0 (فرض کنید 202 در top است)
+
+    // حالا ورودی جدید: باید از صف dequeue کند و پارک کند
+    myParking.input(707);  // 707 enqueue می‌شود, اما اول 505 dequeue و پارک می‌شود
+
+    // نمایش وضعیت پارکینگ و صف پس از این عملیات (صف باید 606 707 داشته باشد)
+    cout << "\nParking status after re-input:" << endl;
+    for (int i = 0; i < n; i++) {
+        myParking.display(i);
+    }
+    myParking.displayInputQueue();
+
+    // تست‌های دیگر برای کامل بودن
+    // تست جستجو
+    cout << "\nTesting find for car 303:" << endl;
+    myParking.find(303);
+
+    // نمایش پس از جستجو
+    cout << "\nParking status after find" << endl;
+    for (int i = 0; i < n; i++) {
+        myParking.display(i);
+    }
+
+    // تست خروجی
+    cout << "\nTesting output for car 303:" << endl;
+    myParking.output(303);
+
+    // نمایش پس از خروجی
+    cout << "\nParking status after output:" << endl;
+    for (int i = 0; i < n; i++) {
+        myParking.display(i);
+    }
+
+    // تست مرتب سازی
+    cout << "\nTesting ordering for column 0:" << endl;
+    myParking.ordering(0);
+
+    // نمایش پس از مرتب سازی
+    cout << "\nParking status after ordering column 0:" << endl;
+    for (int i = 0; i < n; i++) {
+        myParking.display(i);
+    }
+
+    // تست جابجایی
+    cout << "\nTesting displacement from column 0 to column 1:" << endl;
+    myParking.displacement(0, 1);
+
+    // نمایش پس از جابجایی
+    cout << "\nParking status after displacement:" << endl;
+    for (int i = 0; i < n; i++) {
+        myParking.display(i);
+    }
+
+    // نمایش نهایی صف
+    myParking.displayInputQueue();
+
+    return 0;
 }
