@@ -250,9 +250,9 @@ public:
 //linkedlist ارث بری کرده
 // میشه O(n) 
 
+    // O(1)
     // خارج کردن اولین ماشین از صف (dequeue)
     //وقتی ماشین از صف ورودی، وارد پارکینگ می شود
-
     int dequeue() {
         if (list.head == nullptr) {
             cout << "Queue is empty!" << endl;
@@ -264,6 +264,7 @@ public:
         return carID;                  // شماره ماشین رو برمی‌گردونه تا داخل استک گذاشته بشه 
     }
 
+    // O(1)
     // فقط نگاه کردن به اولین ماشین بدون حذف
     int peek() {
         if (list.head == nullptr) {
@@ -273,11 +274,14 @@ public:
         return list.getFirst();
     }
 
+    // O(1)
     // چک کردن خالی بودن صف
     bool isEmpty() {
         return list.head == nullptr;
     }
 
+    // O(N)
+    //n تعداد ماشین های در صف 
     // نمایش تمام ماشین‌های تو صف ورودی (از اول تا آخر) 
     void display() {
         if (list.head == nullptr) {
@@ -309,7 +313,8 @@ class Parking{
         cout << "Parking created with " << numbersOfColumn
              << " columns, each have " << columnCapacity << " capacity." << endl;
     }
-
+    // O(N)
+    //  که n تعداد ستون هاست 
     // تابع ورود خودرو به پارکینگ 
     // ماشین از صف ورودی وارد اولین استک خالی می شود 
     int input(int carID) {
@@ -335,7 +340,7 @@ class Parking{
 
     return -1;  // یعنی پارکینگ پر بود و ماشین پارک نشد
 }
-
+    // O(1)
     // ورود به Stack مشخص (شماره i توسط کاربر تعیین می‌شه)
     void input(int carID, int i) {
          // ماشین وارد صف ورودی میشه (enqueue)
@@ -363,7 +368,8 @@ class Parking{
         columns[i].push(car);
         cout << "Car " << car << " parked in column " << i << endl;
     }
-    
+    // O(n * m)
+    //جایی که n حداکثر تعداد ستون ها و m حداکثر ظرفیت هر ستون
     // تابع find - جستجوی ماشین در تمام استک‌ها
     int find(int carID) {
         for (int col = 0; col < numbersOfColumn; col++) {
@@ -449,6 +455,7 @@ class Parking{
         if (columns[i].peek()==0) cout << "displacement done." <<endl;
     }
 
+    // O(M log M)
     void ordering(int i) {
         if (i < 0 || i >= numbersOfColumn) {
             cout << "stack number is invalid." << endl;
